@@ -10,10 +10,10 @@ services:
     environment:
       APP_ENV: ${APP_ENV}
       PORT: ${PORT}
-      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
-      BLUEPRINT_DB_ADDRESS: ${BLUEPRINT_DB_ADDRESS}
-      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
-      BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
+      URLSHORT_DB_PORT: ${URLSHORT_DB_PORT}
+      URLSHORT_DB_ADDRESS: ${URLSHORT_DB_ADDRESS}
+      URLSHORT_DB_PASSWORD: ${URLSHORT_DB_PASSWORD}
+      URLSHORT_DB_DATABASE: ${URLSHORT_DB_DATABASE}
     depends_on:
       redis_bp:
         condition: service_healthy
@@ -23,7 +23,7 @@ services:
     image: redis:7.2.4
     restart: unless-stopped
     ports:
-      - "${BLUEPRINT_DB_PORT}:6379"
+      - "${URLSHORT_DB_PORT}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
