@@ -3,7 +3,9 @@ package server
 import (
 	"encoding/json"
 	"log"
+	"log/slog"
 	"net/http"
+	"net/url"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
@@ -13,6 +15,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.HandleFunc("/", s.HelloWorldHandler)
 
 	mux.HandleFunc("/health", s.healthHandler)
+
+	mux.HandleFunc("/shorten", s.shortenHandler)
 
 	// Wrap the mux with CORS middleware
 	return s.corsMiddleware(mux)
@@ -60,4 +64,55 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 	if _, err := w.Write(resp); err != nil {
 		log.Printf("Failed to write response: %v", err)
 	}
+}
+
+type ShortenRequest struct {
+	URL string `json:"url"`
+}
+
+func (s *Server) shortenHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "405 Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req ShortenRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		http.Error(w, "400 Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	if req.URL == "" {
+		http.Error(w, "URL is required", http.StatusBadRequest)
+		return
+	}
+
+	if !isValidURL(req.URL) {
+		http.Error(w, "URL is not valid", http.StatusBadRequest)
+		return
+	}
+
+}
+
+func isValidURL(urlStr string) bool {
+	url, err := url.Parse(urlStr)
+	if err != nil {
+		slog.Warn("url.Parse", "err", err)
+		return false
+	}
+
+	if url.Scheme != "https" {
+		slog.Warn("invalid url scheme", "scheme", url.Scheme)
+		return false
+	}
+
+	if url.Host == "" {
+		slog.Warn("url.Host", "invalid", url.Host)
+		return false
+	}
+
+	return true
 }

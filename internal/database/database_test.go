@@ -12,7 +12,7 @@ import (
 func mustStartRedisContainer() (func(context.Context, ...testcontainers.TerminateOption) error, error) {
 	dbContainer, err := redis.Run(
 		context.Background(),
-		"docker.io/redis:7.2.4",
+		"docker.io/redis:8.0.2",
 		redis.WithSnapshotting(10, 1),
 		redis.WithLogLevel(redis.LogLevelVerbose),
 	)
