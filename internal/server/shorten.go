@@ -56,7 +56,7 @@ func (s *Server) shortenHandler(w http.ResponseWriter, r *http.Request) {
 	var response ShortenResponse
 	if exists {
 		response = ShortenResponse{
-			ShortURL:    "http://localhost:8080/" + existingCode,
+			ShortURL:    s.baseURL + "/" + existingCode,
 			ShortCode:   existingCode,
 			OriginalURL: req.URL,
 		}
@@ -75,7 +75,7 @@ func (s *Server) shortenHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response = ShortenResponse{
-			ShortURL:    "http://localhost:8080/" + shortCode,
+			ShortURL:    s.baseURL + "/" + shortCode,
 			ShortCode:   shortCode,
 			OriginalURL: req.URL,
 		}

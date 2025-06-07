@@ -14,14 +14,20 @@ import (
 
 type Server struct {
 	port int
+	baseURL string
 
 	db database.Service
 }
 
 func NewServer() *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
+	baseURL := os.Getenv("BASE_URL")
+	if baseURL == "" {
+		baseURL = fmt.Sprintf("http://localhost:%d", port)
+	}
 	NewServer := &Server{
-		port: port,
+		port:    port,
+		baseURL: baseURL,
 
 		db: database.New(),
 	}
