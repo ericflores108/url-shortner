@@ -1,53 +1,104 @@
-# Project urlshort
+# URL Shortener
 
-One Paragraph of project description goes here
+A simple URL shortener service built with Go and Redis that allows you to convert long URLs into short, manageable links.
 
-## Getting Started
+## Features
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+- Shorten long URLs to compact short codes
+- Redirect from short codes to original URLs  
+- Redis-based storage for fast lookups
+- RESTful API endpoints
+- Health check endpoint
+- CORS support
+- Graceful shutdown
 
-## MakeFile
+## API Endpoints
 
-Run build make command with tests
-```bash
-make all
-```
+- `POST /shorten` - Shorten a URL
+- `GET /r/{shortCode}` - Redirect to original URL
+- `GET /health` - Health check
+- `GET /` - Hello world
 
-Build the application
-```bash
-make build
-```
+## Prerequisites
 
-Run the application
-```bash
-make run
-```
-Create DB container
+- Go 1.24.2+
+- Redis
+- Docker & Docker Compose (optional)
+
+## Quick Start
+
+### Using Docker Compose
+
 ```bash
 make docker-run
 ```
 
-Shutdown DB Container
+### Local Development
+
+1. Start Redis locally (port 6379)
+2. Set environment variables:
+   ```bash
+   export URLSHORT_DB_ADDRESS=localhost
+   export URLSHORT_DB_PORT=6379
+   export PORT=8080
+   ```
+3. Run the application:
+   ```bash
+   make run
+   ```
+
+## Environment Variables
+
+- `PORT` - Server port
+- `URLSHORT_DB_ADDRESS` - Redis host
+- `URLSHORT_DB_PORT` - Redis port  
+- `URLSHORT_DB_PASSWORD` - Redis password (optional)
+- `URLSHORT_DB_DATABASE` - Redis database number
+- `APP_ENV` - Application environment
+
+## Available Commands
+
+Build and test:
+```bash
+make all
+```
+
+Build the application:
+```bash
+make build
+```
+
+Run the application:
+```bash
+make run
+```
+
+Start with Docker Compose:
+```bash
+make docker-run
+```
+
+Stop Docker containers:
 ```bash
 make docker-down
 ```
 
-DB Integrations Test:
+Run integration tests:
 ```bash
 make itest
 ```
 
-Live reload the application:
+Run with live reload:
 ```bash
 make watch
 ```
 
-Run the test suite:
+Run test suite:
 ```bash
 make test
 ```
 
-Clean up binary from the last build:
+Clean build artifacts:
 ```bash
 make clean
 ```
