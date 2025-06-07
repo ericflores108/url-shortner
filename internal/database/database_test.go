@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"log"
+	"os"
 	"testing"
 
 	"github.com/testcontainers/testcontainers-go"
@@ -30,9 +31,10 @@ func mustStartRedisContainer() (func(context.Context, ...testcontainers.Terminat
 		return dbContainer.Terminate, err
 	}
 
-	address = dbHost
-	port = dbPort.Port()
-	database = "0"
+	os.Setenv("URLSHORT_DB_ADDRESS", dbHost)
+	os.Setenv("URLSHORT_DB_PORT", dbPort.Port())
+	os.Setenv("URLSHORT_DB_DATABASE", "0")
+	os.Setenv("URLSHORT_DB_PASSWORD", "")
 
 	return dbContainer.Terminate, err
 }

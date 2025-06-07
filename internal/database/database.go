@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"log"
 	"math"
-	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"urlshort/internal/secrets"
 
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/redis/go-redis/v9"
@@ -25,24 +26,22 @@ type service struct {
 	db *redis.Client
 }
 
-var (
-	address  = os.Getenv("URLSHORT_DB_ADDRESS")
-	port     = os.Getenv("URLSHORT_DB_PORT")
-	password = os.Getenv("URLSHORT_DB_PASSWORD")
-	database = os.Getenv("URLSHORT_DB_DATABASE")
-)
-
 func New() Service {
-	num, err := strconv.Atoi(database)
+	redisConfig, err := secrets.GetRedisConfigForEnv()
+	if err != nil {
+		log.Fatalf("failed to get Redis config: %v", err)
+	}
+
+	num, err := strconv.Atoi(redisConfig.Database)
 	if err != nil {
 		log.Fatalf("database incorrect %v", err)
 	}
 
-	fullAddress := fmt.Sprintf("%s:%s", address, port)
+	fullAddress := fmt.Sprintf("%s:%s", redisConfig.Address, redisConfig.Port)
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fullAddress,
-		Password: password,
+		Password: redisConfig.Password,
 		DB:       num,
 		// Note: It's important to add this for a secure connection. Most cloud services that offer Redis should already have this configured in their services.
 		// For manual setup, please refer to the Redis documentation: https://redis.io/docs/latest/operate/oss_and_stack/management/security/encryption/
