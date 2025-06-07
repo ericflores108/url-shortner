@@ -20,6 +20,8 @@ type ShortenResponse struct {
 }
 
 func (s *Server) shortenHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "405 Method Not Allowed", http.StatusMethodNotAllowed)
 		return
@@ -44,16 +46,37 @@ func (s *Server) shortenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	shortCode, err := generateShortCode(8)
+	existingCode, exists, err := s.db.URLExists(ctx, req.URL)
 	if err != nil {
-		http.Error(w, "Error generating short code", http.StatusInternalServerError)
+		http.Error(w, "Error checking URL", http.StatusInternalServerError)
 		return
 	}
 
-	response := ShortenResponse{
-		ShortURL:    "http://localhost:8080/" + shortCode,
-		ShortCode:   shortCode,
-		OriginalURL: req.URL,
+	var response ShortenResponse
+	if exists {
+		response = ShortenResponse{
+			ShortURL:    "http://localhost:8080/" + existingCode,
+			ShortCode:   existingCode,
+			OriginalURL: req.URL,
+		}
+	} else {
+		shortCode, err := generateShortCode(8)
+		if err != nil {
+			http.Error(w, "Error generating short code", http.StatusInternalServerError)
+			return
+		}
+
+		err = s.db.StoreURL(ctx, shortCode, req.URL)
+		if err != nil {
+			http.Error(w, "Error storing URL", http.StatusInternalServerError)
+			return
+		}
+
+		response = ShortenResponse{
+			ShortURL:    "http://localhost:8080/" + shortCode,
+			ShortCode:   shortCode,
+			OriginalURL: req.URL,
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
