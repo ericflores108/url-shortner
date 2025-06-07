@@ -1,0 +1,25 @@
+# Infrastructure files
+infra/
+*.tf
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+
+# Development files
+.git/
+.gitignore
+README.md
+Makefile
+tmp/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
