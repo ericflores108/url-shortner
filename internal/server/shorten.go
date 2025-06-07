@@ -48,6 +48,7 @@ func (s *Server) shortenHandler(w http.ResponseWriter, r *http.Request) {
 
 	existingCode, exists, err := s.db.URLExists(ctx, req.URL)
 	if err != nil {
+		slog.Warn("s.db.URLExists:", "err", err)
 		http.Error(w, "Error checking URL", http.StatusInternalServerError)
 		return
 	}
@@ -68,6 +69,7 @@ func (s *Server) shortenHandler(w http.ResponseWriter, r *http.Request) {
 
 		err = s.db.StoreURL(ctx, shortCode, req.URL)
 		if err != nil {
+			slog.Warn("s.db.StoreURL:", "err", err)
 			http.Error(w, "Error storing URL", http.StatusInternalServerError)
 			return
 		}
