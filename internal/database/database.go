@@ -18,7 +18,7 @@ type Service interface {
 	Health() map[string]string
 	StoreURL(ctx context.Context, shortCode, originalURL string) error
 	GetURL(ctx context.Context, shortCode string) (string, bool, error)
-	URLExists(ctx context.Context, originalURL string) (string, bool, error)
+	GetShortCode(ctx context.Context, originalURL string) (string, bool, error)
 }
 
 type service struct {

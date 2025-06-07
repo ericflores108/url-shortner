@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"time"
 
@@ -24,7 +25,7 @@ func (s *service) StoreURL(ctx context.Context, shortCode, originalURL string) e
 	return nil
 }
 
-func (s *service) GetURL(ctx context.Context, originalURL string) (string, bool, error) {
+func (s *service) GetShortCode(ctx context.Context, originalURL string) (string, bool, error) {
 	shortCode, err := s.db.Get(ctx, "url:"+originalURL).Result()
 	switch {
 	case err == redis.Nil:
@@ -39,14 +40,21 @@ func (s *service) GetURL(ctx context.Context, originalURL string) (string, bool,
 	return shortCode, true, nil
 }
 
-func (s *service) URLExists(ctx context.Context, originalURL string) (string, bool, error) {
-	shortCode, err := s.db.Get(ctx, "url:"+originalURL).Result()
-	if err == redis.Nil {
-		return "", false, nil
+func (s *service) GetURL(ctx context.Context, shortCode string) (string, bool, error) {
+	if shortCode == "" {
+		return "", false, fmt.Errorf("Short code cannot be empty")
 	}
-	if err != nil {
+
+	url, err := s.db.Get(ctx, "code:"+shortCode).Result()
+	switch {
+	case err == redis.Nil:
+		return "", false, nil
+	case err != nil:
 		slog.Warn("Get failed", "err", err)
 		return "", false, err
+	case url == "":
+		slog.Debug("url is empty", "URL", shortCode)
+		return "", false, nil
 	}
-	return shortCode, true, nil
+	return url, true, nil
 }

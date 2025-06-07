@@ -46,7 +46,7 @@ func (s *Server) shortenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	existingCode, exists, err := s.db.URLExists(ctx, req.URL)
+	existingCode, exists, err := s.db.GetShortCode(ctx, req.URL)
 	if err != nil {
 		slog.Warn("s.db.URLExists:", "err", err)
 		http.Error(w, "Error checking URL", http.StatusInternalServerError)

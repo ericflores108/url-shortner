@@ -14,7 +14,11 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	mux.HandleFunc("/health", s.healthHandler)
 
+	// shortens URL
 	mux.HandleFunc("/shorten", s.shortenHandler)
+
+	// redirects to original URL
+	mux.HandleFunc("/r/{shortCode}", s.redirectHandler)
 
 	// Wrap the mux with CORS middleware
 	return s.corsMiddleware(mux)
