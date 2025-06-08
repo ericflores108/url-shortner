@@ -26,32 +26,15 @@ type service struct {
 }
 
 var (
-	address  = os.Getenv("URLSHORT_DB_ADDRESS")
-	port     = os.Getenv("URLSHORT_DB_PORT")
-	password = os.Getenv("URLSHORT_DB_PASSWORD")
-	database = os.Getenv("URLSHORT_DB_DATABASE")
+	url = os.Getenv("REDIS_URL")
 )
 
 func New() Service {
-	num, err := strconv.Atoi(database)
-	if err != nil {
-		log.Fatalf("database incorrect %v", err)
-	}
+	opt, _ := redis.ParseURL(url)
 
-	fullAddress := fmt.Sprintf("%s:%s", address, port)
+	client := redis.NewClient(opt)
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     fullAddress,
-		Password: password,
-		DB:       num,
-		// Note: It's important to add this for a secure connection. Most cloud services that offer Redis should already have this configured in their services.
-		// For manual setup, please refer to the Redis documentation: https://redis.io/docs/latest/operate/oss_and_stack/management/security/encryption/
-		// TLSConfig: &tls.Config{
-		// 	MinVersion: tls.VersionTLS12,
-		// },
-	})
-
-	s := &service{db: rdb}
+	s := &service{db: client}
 
 	return s
 }
