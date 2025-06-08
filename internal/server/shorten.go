@@ -75,7 +75,7 @@ func (s *Server) shortenHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response = ShortenResponse{
-			ShortURL:    s.baseURL + "/" + shortCode,
+			ShortURL:    s.baseURL + "/r/" + shortCode,
 			ShortCode:   shortCode,
 			OriginalURL: req.URL,
 		}
