@@ -13,7 +13,7 @@ import (
 )
 
 type Server struct {
-	port int
+	port    int
 	baseURL string
 
 	db database.Service
@@ -25,7 +25,7 @@ func NewServer() *http.Server {
 	if baseURL == "" {
 		baseURL = fmt.Sprintf("http://localhost:%d", port)
 	}
-	NewServer := &Server{
+	server := &Server{
 		port:    port,
 		baseURL: baseURL,
 
@@ -33,13 +33,13 @@ func NewServer() *http.Server {
 	}
 
 	// Declare Server config
-	server := &http.Server{
-		Addr:         fmt.Sprintf(":%d", NewServer.port),
-		Handler:      NewServer.RegisterRoutes(),
+	httpServer := &http.Server{
+		Addr:         fmt.Sprintf("0.0.0.0:%d", server.port),
+		Handler:      server.RegisterRoutes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
 
-	return server
+	return httpServer
 }
