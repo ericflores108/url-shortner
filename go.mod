@@ -1,6 +1,6 @@
 module urlshort
 
-go 1.24.2
+go 1.23.10
 
 require (
 	github.com/joho/godotenv v1.5.1
